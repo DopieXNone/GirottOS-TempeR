@@ -41,19 +41,54 @@ trap 'rm -rf "$WORK"' EXIT
 
 cp TempeR ../README.md ../LICENSE "$WORK/"
 
-cat > "$WORK/temper.desktop" <<'EOF'
+# ── application icon ──────────────────────────────────────────────────────────
+# Put data/icon.svg (best) or a square data/icon.png (e.g. 256x256) in this
+# folder to give TempeR its own icon in the applications menu and the window
+# list.  Without one the theme's generic system monitor icon is used.
+
+APP_ID=com.girottos.TempeR
+ICON_NAME=utilities-system-monitor
+ICON_SRC=""
+ICON_INSTALL=""     # extra line for package(), empty without an icon
+
+if [ -f data/icon.svg ]; then
+    cp data/icon.svg "$WORK/icon.svg"
+    ICON_NAME=$APP_ID
+    ICON_SRC=icon.svg
+    ICON_INSTALL="  install -Dm644 icon.svg \"\$pkgdir/usr/share/icons/hicolor/scalable/apps/$APP_ID.svg\""
+    echo "Icon    : data/icon.svg"
+elif [ -f data/icon.png ]; then
+    # the hicolor folder must match the real size of the image
+    SIZE=$(file -b data/icon.png | grep -oE '[0-9]+ x [0-9]+' | head -n 1)
+    W=${SIZE%% x *}
+    H=${SIZE##* x }
+    if [ -z "$SIZE" ] || [ "$W" != "$H" ]; then
+        echo "ERROR: data/icon.png must be a square PNG image (now: ${SIZE:-unknown})."
+        exit 1
+    fi
+    cp data/icon.png "$WORK/icon.png"
+    ICON_NAME=$APP_ID
+    ICON_SRC=icon.png
+    ICON_INSTALL="  install -Dm644 icon.png \"\$pkgdir/usr/share/icons/hicolor/${W}x${W}/apps/$APP_ID.png\""
+    echo "Icon    : data/icon.png (${W}x${W})"
+else
+    echo "Icon    : none in data/, using the generic $ICON_NAME"
+fi
+echo
+
+cat > "$WORK/temper.desktop" <<EOF
 [Desktop Entry]
 Type=Application
 Name=TempeR
 GenericName=Hardware Monitor
 Comment=Temperatures of processor, graphics card, disks, memory and system
 Exec=TempeR
-Icon=utilities-system-monitor
+Icon=$ICON_NAME
 Terminal=false
 Categories=System;Monitor;GTK;
 Keywords=temperature;sensors;cpu;gpu;fan;monitor;overlay;
 StartupNotify=true
-StartupWMClass=com.girottos.TempeR
+StartupWMClass=$APP_ID
 EOF
 
 cat > "$WORK/PKGBUILD" <<EOF
@@ -72,14 +107,17 @@ optdepends=('tela-icon-theme: component, tray and status icons (AUR, otherwise e
             'nvidia-utils: temperature and usage of NVIDIA GPUs (proprietary driver)'
             'hwdata: graphics card names from the pci.ids database')
 options=('!debug')
-source=('TempeR' 'temper.desktop' 'README.md' 'LICENSE')
-sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
+source=('TempeR' 'temper.desktop' 'README.md' 'LICENSE' ${ICON_SRC:+"'$ICON_SRC'"})
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' ${ICON_SRC:+"'SKIP'"})
 
 package() {
   install -Dm755 TempeR "\$pkgdir/usr/bin/TempeR"
+  # lowercase name too: "temper" and "TempeR" both start it
+  ln -s TempeR "\$pkgdir/usr/bin/temper"
   install -Dm644 temper.desktop "\$pkgdir/usr/share/applications/com.girottos.TempeR.desktop"
   install -Dm644 README.md "\$pkgdir/usr/share/doc/\$pkgname/README.md"
   install -Dm644 LICENSE "\$pkgdir/usr/share/licenses/\$pkgname/LICENSE"
+$ICON_INSTALL
 }
 EOF
 
@@ -95,4 +133,8 @@ echo "Package: ./$PKG"
 echo
 echo "Install it with:"
 echo "  sudo pacman -U ./$PKG"
+echo
+echo "Start it with: temper  (or TempeR)"
+echo "Uninstall it with:"
+echo "  sudo pacman -R $PKGNAME"
 echo "================================"
