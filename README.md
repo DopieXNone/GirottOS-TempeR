@@ -429,7 +429,6 @@ control first.
 |-------------------|-----------------------------------------------|
 | F5                | Refresh: look for sensors again               |
 | Ctrl+,            | Settings                                      |
-| Ctrl+Shift+Alt+Space+Enter | Specs window                         |
 | Ctrl+W            | Close the window (stays in the tray)          |
 | Ctrl+Q            | Quit TempeR                                   |
 
