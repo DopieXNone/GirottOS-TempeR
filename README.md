@@ -367,7 +367,6 @@ Because this is a beta release, bug reports are especially useful.
 
 When opening an issue, please include:
 
-* Linux distribution
 * Architecture
 * Desktop environment / compositor, Wayland or X11
 * TempeR version/commit
