@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>GirottOS</vendor>
+  <vendor_url>https://github.com/DopieXNone/GirottOS-TempeR</vendor_url>
+  <action id="com.girottos.temper.fan-control">
+    <description>Change the fan curves</description>
+    <message>Authentication is required to change the fan curves</message>
+    <icon_name>utilities-system-monitor</icon_name>
+    <!-- the person sitting at the computer, as for power profiles -->
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+  </action>
+  <action id="com.girottos.temper.keyboard-light">
+    <description>Change the keyboard light</description>
+    <message>Authentication is required to change the keyboard light</message>
+    <icon_name>input-keyboard</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>yes</allow_active>
+    </defaults>
+  </action>
+</policyconfig>

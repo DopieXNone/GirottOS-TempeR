@@ -1,0 +1,16 @@
+post_install() {
+  echo ">>> TempeR: open \"Fan curves\" in TempeR to set your fan curves."
+  echo ">>> The temper-fand service starts by itself when needed."
+}
+
+post_upgrade() {
+  # the new temper-fand, if the old one is running
+  systemctl try-restart temper-fand.service >/dev/null 2>&1 || true
+}
+
+pre_remove() {
+  # firmware fan control, asusd's curves and paused fan programs back
+  systemctl stop temper-fand.service >/dev/null 2>&1 || true
+  /usr/bin/temper-fand --release >/dev/null 2>&1 || true
+  systemctl disable temper-fand.service >/dev/null 2>&1 || true
+}

@@ -1,0 +1,6 @@
+# D-Bus activation: TempeR's window starts the service when it needs it
+[D-BUS Service]
+Name=com.girottos.TempeR.FanControl
+Exec=/usr/bin/false
+User=root
+SystemdService=temper-fand.service
